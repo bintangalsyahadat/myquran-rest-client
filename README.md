@@ -6,16 +6,16 @@ Platform ini dirancang dengan arsitektur **Multi-Page Application (MPA)** yang r
 
 ---
 
-## 📑 Daftar Menu Halaman (Pembagian Fitur)
+## 📑 Daftar Menu Halaman
 
 Setiap halaman menu berdiri sendiri sebagai file PHP independen untuk mendukung kolaborasi tim yang terstruktur:
 
-| No | Menu Halaman | File | Penanggung Jawab | Deskripsi Fitur Utama | Sumber REST API |
-| :---: | :--- | :--- | :--- | :--- | :--- |
-| 1 | **Jadwal Sholat** | `index.php` | **Maintainer** (Ketua) | Jadwal 8 waktu sholat, jam digital realtime, & live pencarian kota se-Indonesia | `api.myquran.com` |
-| 2 | **Al-Qur'an Digital** | `quran.php` | **Developer 1** | Katalog 114 surah, modal baca ayat lengkap (Arab, Latin, Indo), & audio murottal | `api.myquran.com` |
-| 3 | **Doa & Dzikir Harian** | `doa.php` | **Developer 2** | Koleksi 227+ doa sahih, bacaan transliterasi Latin, filter kategori, & pagination | `equran.id` |
-| 4 | **Asmaul Husna** | `asmaul-husna.php` | **Developer 3** | 99 nama agung Allah SWT beserta makna, fitur pencarian, & widget kalender Hijriah | `api.myquran.com` |
+| No | Menu Halaman | File | Deskripsi Fitur Utama | Sumber REST API |
+| :---: | :--- | :--- | :--- | :--- |
+| 1 | **Jadwal Sholat** | `index.php` | Jadwal 8 waktu sholat, jam digital realtime, & live pencarian kota se-Indonesia | `api.myquran.com` |
+| 2 | **Al-Qur'an Digital** | `quran.php` | Katalog 114 surah, modal baca ayat lengkap (Arab, Latin, Indo), & audio murottal | `api.myquran.com` |
+| 3 | **Doa & Dzikir Harian** | `doa.php` | Koleksi 227+ doa sahih, bacaan transliterasi Latin, filter kategori, & pagination | `equran.id` |
+| 4 | **Asmaul Husna** | `asmaul-husna.php` | 99 nama agung Allah SWT beserta makna, fitur pencarian, & widget kalender Hijriah | `api.myquran.com` |
 
 ---
 
@@ -170,6 +170,6 @@ myquran-rest-client/
 
 ## 🤖 Catatan Pengembangan dengan AI Assistant (Vibe Coding)
 
-Bagi anggota tim yang menggunakan AI Assistant (Cursor, GitHub Copilot, ChatGPT, dll.):
+Bagi developer yang menggunakan AI Assistant (Cursor, GitHub Copilot, ChatGPT, dll.):
 * Silakan gunakan panduan teknis yang telah disediakan di file **[AGENTS.md](AGENTS.md)**.
 * Pastikan AI Assistant mempertahankan penggunaan JavaScript `fetch()` / AJAX agar fitur pencarian, filter, dan pagination berjalan mulus **tanpa reload halaman**.

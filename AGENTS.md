@@ -22,7 +22,7 @@ Dokumen ini dibuat agar **AI Coding Assistant / Agent** (Cursor, Windsurf, GitHu
 
 ## 🔄 2. Standar Git Workflow (Wajib Dipahami AI Agent)
 
-Sesuai materi perkuliahan *Git Workflow & GitHub Projects*, seluruh anggota tim dan AI Assistant wajib mengikuti alur **GitHub Flow**:
+AI Assistant wajib mengikuti alur **GitHub Flow**:
 
 ```text
 [main branch (selalu stabil)]
@@ -37,7 +37,7 @@ Sesuai materi perkuliahan *Git Workflow & GitHub Projects*, seluruh anggota tim 
       │
       ├───► 5. Buka Pull Request (PR) & Tautkan Issue (Closes #X)
       │
-      └───► 6. Review & Squash Merge oleh Maintainer (Ketua Tim)
+      └───► 6. Review & Squash Merge oleh Maintainer
 ```
 
 ### Konvensi Penamaan Branch per Halaman:
