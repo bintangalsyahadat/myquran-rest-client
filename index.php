@@ -5,7 +5,7 @@ include 'includes/header.php';
 
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
   
-  <!-- ================= HERO BANNER LENGKAP ================= -->
+  <!-- ================= HERO BANNER ================= -->
   <div class="relative overflow-hidden rounded-[2.5rem] islamic-pattern text-white p-7 sm:p-12 shadow-2xl shadow-emerald-950/20 border border-emerald-500/20">
     <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-24 -right-24 w-80 h-80 bg-teal-400/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -105,7 +105,7 @@ include 'includes/header.php';
         </button>
       </div>
 
-      <!-- Autocomplete Dropdown List (Solid Putih 100% Opaque & Jelas Dibaca) -->
+      <!-- Autocomplete Dropdown List -->
       <div 
         id="citySearchResults" 
         class="hidden absolute left-0 right-0 top-full mt-2 bg-white border-2 border-slate-200 rounded-2xl shadow-2xl max-h-80 overflow-y-auto z-50 divide-y divide-slate-100 ring-1 ring-black/10"
@@ -114,27 +114,31 @@ include 'includes/header.php';
       </div>
     </div>
 
-    <!-- Quick Select Pills (Kota Populer) -->
+    <!-- Quick Select Pills (Kota Populer & Lokasi Realtime) -->
     <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+      <button type="button" onclick="detectUserLocation()" class="city-pill px-3 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold border border-emerald-300 flex items-center gap-1.5 transition shadow-sm" title="Deteksi lokasi Anda secara realtime via GPS browser">
+        <i class="fa-solid fa-location-crosshairs text-emerald-700"></i>
+        <span>Lokasi Saya (GPS)</span>
+      </button>
       <span class="text-slate-400 font-semibold flex items-center gap-1 mr-1">
         <i class="fa-solid fa-fire text-amber-500"></i> Populer:
       </span>
       <button type="button" onclick="selectCity('1301', 'KOTA JAKARTA')" class="city-pill px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 font-semibold border border-slate-200/60 transition">
         Jakarta
       </button>
-      <button type="button" onclick="selectCity('1203', 'KOTA BANDUNG')" class="city-pill px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 font-semibold border border-slate-200/60 transition">
+      <button type="button" onclick="selectCity('1219', 'KOTA BANDUNG')" class="city-pill px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 font-semibold border border-slate-200/60 transition">
         Bandung
       </button>
       <button type="button" onclick="selectCity('1638', 'KOTA SURABAYA')" class="city-pill px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 font-semibold border border-slate-200/60 transition">
         Surabaya
       </button>
-      <button type="button" onclick="selectCity('1402', 'KOTA YOGYAKARTA')" class="city-pill px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 font-semibold border border-slate-200/60 transition">
+      <button type="button" onclick="selectCity('1505', 'KOTA YOGYAKARTA')" class="city-pill px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 font-semibold border border-slate-200/60 transition">
         Yogyakarta
       </button>
       <button type="button" onclick="selectCity('0228', 'KOTA MEDAN')" class="city-pill px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 font-semibold border border-slate-200/60 transition">
         Medan
       </button>
-      <button type="button" onclick="selectCity('2318', 'KOTA MAKASSAR')" class="city-pill px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 font-semibold border border-slate-200/60 transition">
+      <button type="button" onclick="selectCity('2622', 'KOTA MAKASSAR')" class="city-pill px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 font-semibold border border-slate-200/60 transition">
         Makassar
       </button>
     </div>
@@ -222,6 +226,7 @@ include 'includes/header.php';
         <h3 id="scheduleTitle" class="text-lg sm:text-xl font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
           <span>Jadwal Sholat</span>
           <span id="activeCityBadge" class="text-xs px-2.5 py-0.5 rounded-lg bg-brand-100 text-brand-800 font-bold">KOTA JAKARTA</span>
+          <span id="cityTwinToggleContainer"></span>
         </h3>
         <p id="scheduleDateSubtitle" class="text-xs text-slate-500 mt-0.5">Memuat tanggal...</p>
       </div>
@@ -270,6 +275,7 @@ include 'includes/header.php';
         <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
           <span>Jadwal Sholat 1 Bulan Penuh</span>
           <span id="monthlyActiveCityBadge" class="text-xs px-2.5 py-0.5 rounded-lg bg-brand-100 text-brand-800 font-bold">KOTA JAKARTA</span>
+          <span id="monthlyCityTwinToggleContainer"></span>
         </h3>
         <p id="monthlyScheduleSubtitle" class="text-xs text-slate-500 mt-0.5">Memuat jadwal bulanan...</p>
       </div>
@@ -539,6 +545,9 @@ include 'includes/header.php';
     const yyyy = targetDate.getFullYear();
     const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
     const dd = String(targetDate.getDate()).padStart(2, '0');
+
+    // Cek dan tampilkan tombol beralih cepat jika wilayah memiliki kembaran Kota <-> Kab
+    updateTwinCityToggle(cityName);
 
     // Tampilkan Skeleton / Loading State
     renderSkeleton();
@@ -977,6 +986,10 @@ include 'includes/header.php';
     if (clearBtn) clearBtn.classList.remove('hidden');
     if (searchResults) searchResults.classList.add('hidden');
 
+    // Simpan pilihan kota manual user ke localStorage agar tersimpan permanen dan tidak tertimpa GPS otomatis
+    localStorage.setItem('myquran_user_city', JSON.stringify({ id: cityId, name: cityName }));
+    localStorage.setItem('myquran_user_manual_select', 'true');
+
     if (activeTab === 'month') {
       activeCityId = cityId;
       activeCityName = cityName;
@@ -984,6 +997,53 @@ include 'includes/header.php';
     } else {
       loadPrayerSchedule(cityId, cityName, activeDate);
     }
+  }
+
+  // Helper Peralihan Cepat Wilayah Kembar (Kota <-> Kab)
+  async function updateTwinCityToggle(cityName) {
+    const containers = [
+      document.getElementById('cityTwinToggleContainer'),
+      document.getElementById('monthlyCityTwinToggleContainer')
+    ];
+
+    let targetTwin = '';
+    const upper = cityName.toUpperCase().trim();
+
+    if (upper.startsWith('KAB. ') || upper.startsWith('KABUPATEN ')) {
+      targetTwin = 'KOTA ' + upper.replace(/^KAB\.\s+|^KABUPATEN\s+/gi, '').trim();
+    } else if (upper.startsWith('KOTA ')) {
+      targetTwin = 'KAB. ' + upper.replace(/^KOTA\s+/gi, '').trim();
+    } else {
+      containers.forEach(el => { if (el) el.innerHTML = ''; });
+      return;
+    }
+
+    const cleanTargetName = targetTwin.replace(/KOTA\s+|KAB\.\s+/gi, '').trim();
+
+    try {
+      const res = await fetch(`https://api.myquran.com/v2/sholat/kota/cari/${encodeURIComponent(cleanTargetName)}`);
+      const data = await res.json();
+      if (data && data.status && Array.isArray(data.data)) {
+        const found = data.data.find(c => c.lokasi.toUpperCase() === targetTwin);
+        if (found) {
+          const btnHtml = `
+            <button 
+              type="button" 
+              onclick="selectCity('${found.id}', '${found.lokasi}')" 
+              class="inline-flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 hover:text-brand-800 border border-brand-200/80 px-2.5 py-1 rounded-xl transition shadow-xs cursor-pointer"
+              title="Klik jika Anda berada di ${found.lokasi}"
+            >
+              <i class="fa-solid fa-arrows-rotate text-[10px] text-brand-600"></i>
+              <span>Bukan ${cityName}? Beralih ke <u>${found.lokasi}</u></span>
+            </button>
+          `;
+          containers.forEach(el => { if (el) el.innerHTML = btnHtml; });
+          return;
+        }
+      }
+    } catch (e) {}
+
+    containers.forEach(el => { if (el) el.innerHTML = ''; });
   }
 
   // Tutup dropdown jika user klik di luar area input/dropdown
@@ -1095,6 +1155,150 @@ include 'includes/header.php';
     `;
   }
 
+  // 8. Deteksi Lokasi Realtime User saat Browser Dibuka
+  function detectUserLocation() {
+    const bannerBadge = document.getElementById('bannerLocationBadge');
+
+    // Cek apakah user sebelumnya sudah pernah memilih kota secara manual (misal KOTA KEDIRI)
+    const savedCity = localStorage.getItem('myquran_user_city');
+    const manualChoice = localStorage.getItem('myquran_user_manual_select');
+
+    if (manualChoice === 'true' && savedCity) {
+      try {
+        const parsed = JSON.parse(savedCity);
+        if (parsed.id && parsed.name) {
+          activeCityId = parsed.id;
+          activeCityName = parsed.name;
+          loadPrayerSchedule(activeCityId, activeCityName, new Date());
+          return;
+        }
+      } catch (e) {}
+    }
+
+    if (!navigator.geolocation) {
+      console.log('Browser tidak mendukung Geolocation, menggunakan lokasi default:', activeCityName);
+      loadPrayerSchedule(activeCityId, activeCityName, new Date());
+      return;
+    }
+
+    if (bannerBadge) {
+      bannerBadge.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-emerald-400 mr-1"></i> MENDETEKSI LOKASI REALTIME...';
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          // Reverse geocoding gratis via BigDataCloud (CORS-friendly, responsif, tanpa API key)
+          const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=id`;
+          const geoRes = await fetch(geoUrl);
+          const geoData = await geoRes.json();
+
+          // 1. Ekstraksi nama Kota / Kabupaten resmi dari BigDataCloud
+          let foundCityOrKab = '';
+          let isExplicitKota = false;
+          let isExplicitKab = false;
+
+          // Cari entitas Kota / Kabupaten di array administrative (BUKAN kelurahan/kecamatan/locality)
+          if (geoData.localityInfo && Array.isArray(geoData.localityInfo.administrative)) {
+            const adminLevelObj = geoData.localityInfo.administrative.find(item => 
+              /\bkota\s+|\bkabupaten\s+|\bkab\.\s+/i.test(item.name)
+            );
+            if (adminLevelObj && adminLevelObj.name) {
+              foundCityOrKab = adminLevelObj.name;
+            }
+          }
+
+          // Jika tidak ada di administrative array, gunakan geoData.city (BUKAN geoData.locality)
+          if (!foundCityOrKab && geoData.city) {
+            foundCityOrKab = geoData.city;
+          }
+
+          // Jika BigDataCloud belum dapat nama Kota/Kabupaten, gunakan OpenStreetMap Nominatim sebagai validator akurat
+          if (!foundCityOrKab || (!/\bkota\b/i.test(foundCityOrKab) && !/\bkabupaten\b|\bkab\b/i.test(foundCityOrKab))) {
+            try {
+              const nomRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`);
+              const nomData = await nomRes.json();
+              if (nomData && nomData.address) {
+                foundCityOrKab = nomData.address.city || nomData.address.county || nomData.address.municipality || foundCityOrKab;
+              }
+            } catch (e) {}
+          }
+
+          // Fallback terakhir jika semua kosong
+          if (!foundCityOrKab) {
+            foundCityOrKab = geoData.locality || geoData.principalSubdivision || '';
+          }
+
+          // Cek apakah wilayah ini eksplisit KOTA atau KABUPATEN
+          if (/\bkota\b/i.test(foundCityOrKab) && !/\bkabupaten\b|\bkab\b/i.test(foundCityOrKab)) {
+            isExplicitKota = true;
+          } else if (/\bkabupaten\b|\bkab\b/i.test(foundCityOrKab)) {
+            isExplicitKab = true;
+          }
+
+          // Bersihkan prefix untuk dicari di API MyQuran
+          let cleanCity = foundCityOrKab
+            .replace(/Kota Administrasi\s+/gi, '')
+            .replace(/Kota\s+/gi, '')
+            .replace(/Kabupaten\s+/gi, '')
+            .replace(/Kab\.\s+/gi, '')
+            .replace(/Daerah Khusus Ibukota\s+/gi, '')
+            .trim();
+
+          if (cleanCity) {
+            // Cocokkan nama kota ke REST API MyQuran
+            const searchUrl = `https://api.myquran.com/v2/sholat/kota/cari/${encodeURIComponent(cleanCity)}`;
+            const searchRes = await fetch(searchUrl);
+            const searchData = await searchRes.json();
+
+            if (searchData && searchData.status && Array.isArray(searchData.data) && searchData.data.length > 0) {
+              let matched = null;
+
+              // 1. Jika terdeteksi eksplisit sebagai "Kota"
+              if (isExplicitKota) {
+                matched = searchData.data.find(c => c.lokasi.toUpperCase().startsWith('KOTA '));
+              } else if (isExplicitKab) {
+                matched = searchData.data.find(c => c.lokasi.toUpperCase().startsWith('KAB. ') || c.lokasi.toUpperCase().startsWith('KABUPATEN '));
+              }
+
+              // 2. Prioritas cerdas: Jika ada varian "KOTA", utamakan KOTA daripada KAB.
+              // Karena secara alfabetis KAB. selalu di index 0 (contoh: KAB. KEDIRI selalu di index 0, KOTA KEDIRI di index 1)
+              if (!matched) {
+                matched = searchData.data.find(c => c.lokasi.toUpperCase().startsWith('KOTA ')) || searchData.data[0];
+              }
+
+              activeCityId = matched.id;
+              activeCityName = matched.lokasi;
+
+              // Simpan ke localStorage untuk akses cepat berikutnya
+              localStorage.setItem('myquran_user_city', JSON.stringify({ id: activeCityId, name: activeCityName }));
+
+              loadPrayerSchedule(activeCityId, activeCityName, new Date());
+              return;
+            }
+          }
+
+          // Fallback jika nama kota tidak ditemukan di database MyQuran
+          loadPrayerSchedule(activeCityId, activeCityName, new Date());
+        } catch (err) {
+          console.warn('Gagal reverse geocode koordinat GPS:', err);
+          loadPrayerSchedule(activeCityId, activeCityName, new Date());
+        }
+      },
+      (error) => {
+        // User menolak akses lokasi atau waktu request habis -> gunakan lokasi default (Jakarta)
+        console.log('Izin lokasi tidak diberikan atau timeout, menggunakan lokasi default:', activeCityName);
+        loadPrayerSchedule(activeCityId, activeCityName, new Date());
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: 300000 // Cache posisi selama 5 menit
+      }
+    );
+  }
+
   // Inisialisasi saat halaman selesai dimuat
   document.addEventListener('DOMContentLoaded', () => {
     updateClock();
@@ -1104,7 +1308,8 @@ include 'includes/header.php';
     const dateInput = document.getElementById('datePickerInput');
     if (dateInput) dateInput.value = formatDateToInput(new Date());
 
-    loadPrayerSchedule(activeCityId, activeCityName, new Date());
+    // Deteksi lokasi realtime user saat browser dibuka
+    detectUserLocation();
   });
 </script>
 
