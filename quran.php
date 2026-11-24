@@ -300,9 +300,29 @@ include 'includes/header.php';
         </h3>
         <p id="modalSurahSubtitle" class="text-xs text-slate-500 mt-0.5">Arti & rincian ayat</p>
       </div>
-      <button onclick="closeAyatModal()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition" title="Tutup Modal">
-        <i class="fa-solid fa-xmark text-sm"></i>
-      </button>
+      <div class="flex items-center gap-2">
+        <!-- Tombol Putar Full Surah Audio -->
+        <button id="btnPlayFullSurah" onclick="toggleFullSurahAudio()" class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-xs shadow-sm transition hover:scale-105 active:scale-95" title="Putar Murottal Full Surah">
+          <i id="iconPlayFullSurah" class="fa-solid fa-play text-amber-700"></i>
+          <span id="labelPlayFullSurah" class="hidden sm:inline">Putar Surah</span>
+        </button>
+        <button onclick="closeAyatModal()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition" title="Tutup Modal">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Audio Player Banner (Tampil saat audio ayat atau full surah sedang berbunyi) -->
+    <div id="modalAudioBanner" class="hidden px-5 py-2.5 bg-amber-50/90 border-b border-amber-200/70 flex items-center justify-between text-xs text-amber-900">
+      <div class="flex items-center gap-2.5 overflow-hidden">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+        <span id="audioPlayingInfo" class="font-bold truncate text-[11px] sm:text-xs">Memutar audio...</span>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="stopCurrentAudio()" class="px-2.5 py-1 rounded-lg bg-amber-200/70 hover:bg-amber-200 text-amber-900 font-bold text-[11px] transition">
+          <i class="fa-solid fa-stop text-[10px] mr-1"></i> Berhenti
+        </button>
+      </div>
     </div>
 
     <!-- Modal Body (List Ayat) -->
@@ -358,12 +378,331 @@ include 'includes/header.php';
   // State untuk pagination chunking ayat MyQuran & deteksi ayat terlihat
   let currentSurahNumber = null;
   let currentSurahTotalAyat = 0;
+  let currentSurahLatinName = '';
   let currentLoadedAyatCount = 0;
   let highestVisibleAyah = 1; // Menyimpan nomor ayat tertinggi yang benar-benar pernah terlihat di layar
   const CHUNK_SIZE = 30; // Batas maksimal per request dari API MyQuran
 
+  // Global Audio Controller State
+  let globalAudio = new Audio();
+  let currentAudioMode = null; // 'surah' | 'ayah' | null
+  let currentPlayingAyahNo = null;
+  let isAutoPlayingSurah = false; // Flag apakah sedang mode auto-play berurutan seluruh ayat
+  let loadedAyatAudioMap = {}; // Cache map nomor ayat -> audio URL
+
+  // Event listener audio global saat selesai
+  globalAudio.addEventListener('ended', async () => {
+    if (isAutoPlayingSurah && currentAudioMode === 'surah') {
+      const nextAyahNo = currentPlayingAyahNo + 1;
+      if (nextAyahNo <= currentSurahTotalAyat) {
+        await playNextAyahInSequence(nextAyahNo);
+      } else {
+        // Telah selesai seluruh ayat surah
+        stopCurrentAudio();
+      }
+    } else {
+      stopCurrentAudio();
+    }
+  });
+
+  globalAudio.addEventListener('error', (e) => {
+    console.error("Audio playback error:", e);
+    const audioInfo = document.getElementById('audioPlayingInfo');
+    if (audioInfo) audioInfo.textContent = 'Gagal memutar audio (format/link tidak dapat diakses).';
+    setTimeout(() => {
+      stopCurrentAudio();
+    }, 2500);
+  });
+
+  // Hentikan audio yang sedang berjalan & reset tampilan UI
+  function stopCurrentAudio() {
+    isAutoPlayingSurah = false;
+    if (!globalAudio.paused) {
+      globalAudio.pause();
+    }
+    globalAudio.currentTime = 0;
+
+    // Reset tombol Full Surah
+    const iconFull = document.getElementById('iconPlayFullSurah');
+    const labelFull = document.getElementById('labelPlayFullSurah');
+    const btnFull = document.getElementById('btnPlayFullSurah');
+    if (iconFull) iconFull.className = 'fa-solid fa-play text-amber-700';
+    if (labelFull) labelFull.textContent = 'Putar Surah';
+    if (btnFull) {
+      btnFull.classList.remove('bg-amber-600', 'text-white', 'border-amber-600', 'bg-amber-100', 'border-amber-300');
+      btnFull.classList.add('bg-amber-50', 'text-amber-900', 'border-amber-200');
+    }
+
+    // Reset highlight dan icon di ayat yang aktif
+    if (currentPlayingAyahNo !== null) {
+      const activeCard = document.getElementById(`ayat-${currentPlayingAyahNo}`);
+      if (activeCard) {
+        activeCard.classList.remove('border-amber-500', 'ring-2', 'ring-amber-400/50', 'bg-amber-50/40');
+        activeCard.classList.add('border-slate-200/90', 'bg-slate-50');
+      }
+      const activeAyahBtn = document.getElementById(`btnPlayAyah-${currentPlayingAyahNo}`);
+      if (activeAyahBtn) {
+        activeAyahBtn.innerHTML = `<i class="fa-solid fa-play text-[10px]"></i><span>Audio</span>`;
+        activeAyahBtn.classList.remove('bg-amber-600', 'text-white', 'border-amber-600', 'bg-amber-100', 'text-amber-900', 'border-amber-300');
+        activeAyahBtn.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+      }
+    }
+
+    // Sembunyikan banner audio modal
+    const banner = document.getElementById('modalAudioBanner');
+    if (banner) banner.classList.add('hidden');
+
+    currentAudioMode = null;
+    currentPlayingAyahNo = null;
+  }
+
+  // Toggle pemutaran audio full 1 surah secara berurutan ayat per ayat (Auto-Scroll & Border Highlight)
+  async function toggleFullSurahAudio() {
+    const iconFull = document.getElementById('iconPlayFullSurah');
+    const labelFull = document.getElementById('labelPlayFullSurah');
+    const btnFull = document.getElementById('btnPlayFullSurah');
+    const banner = document.getElementById('modalAudioBanner');
+    const audioInfo = document.getElementById('audioPlayingInfo');
+
+    // KASUS 1: Sedang memutar Full Surah -> Pause (Jeda)
+    if (currentAudioMode === 'surah' && !globalAudio.paused) {
+      globalAudio.pause();
+      if (iconFull) iconFull.className = 'fa-solid fa-play text-amber-700';
+      if (labelFull) labelFull.textContent = 'Lanjut Surah';
+      if (btnFull) {
+        btnFull.classList.remove('bg-amber-600', 'text-white', 'border-amber-600');
+        btnFull.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+      }
+      if (audioInfo) {
+        audioInfo.innerHTML = `<span class="text-amber-700 italic font-semibold">(Dijeda)</span> Surah <b>${currentSurahLatinName}</b> &bull; Ayat ${currentPlayingAyahNo || 1} &bull; Misyari Rasyid`;
+      }
+      // Update juga tombol ayat yang sedang dijeda
+      if (currentPlayingAyahNo) {
+        const activeAyahBtn = document.getElementById(`btnPlayAyah-${currentPlayingAyahNo}`);
+        if (activeAyahBtn) {
+          activeAyahBtn.innerHTML = `<i class="fa-solid fa-play text-[10px]"></i><span>Lanjut</span>`;
+          activeAyahBtn.classList.remove('bg-amber-600', 'text-white', 'border-amber-600');
+          activeAyahBtn.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+        }
+      }
+      return;
+    }
+
+    // KASUS 2: Sedang dijeda di mode Surah -> Resume (Lanjutkan dari detik terakhir ayat aktif)
+    if (currentAudioMode === 'surah' && globalAudio.paused && globalAudio.src) {
+      try {
+        await globalAudio.play();
+        if (iconFull) iconFull.className = 'fa-solid fa-pause text-white';
+        if (labelFull) labelFull.textContent = 'Jeda Surah';
+        if (btnFull) {
+          btnFull.classList.remove('bg-amber-50', 'bg-amber-100', 'text-amber-900', 'border-amber-200', 'border-amber-300');
+          btnFull.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+        }
+        if (audioInfo) {
+          audioInfo.innerHTML = `Memutar Surah <b>${currentSurahLatinName}</b> &bull; <b>Ayat ${currentPlayingAyahNo}</b> dari ${currentSurahTotalAyat} &bull; Qari: Misyari Rasyid`;
+          banner.classList.remove('hidden');
+        }
+        if (currentPlayingAyahNo) {
+          const activeAyahBtn = document.getElementById(`btnPlayAyah-${currentPlayingAyahNo}`);
+          if (activeAyahBtn) {
+            activeAyahBtn.innerHTML = `<i class="fa-solid fa-pause text-[10px]"></i><span>Jeda</span>`;
+            activeAyahBtn.classList.remove('bg-white', 'bg-amber-100', 'text-slate-600', 'text-amber-900', 'border-slate-200', 'border-amber-300');
+            activeAyahBtn.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return;
+    }
+
+    // KASUS 3: Memulai pemutaran surah berurutan dari ayat 1
+    stopCurrentAudio();
+    isAutoPlayingSurah = true;
+    currentAudioMode = 'surah';
+
+    if (iconFull) iconFull.className = 'fa-solid fa-pause text-white';
+    if (labelFull) labelFull.textContent = 'Jeda Surah';
+    if (btnFull) {
+      btnFull.classList.remove('bg-amber-50', 'bg-amber-100', 'text-amber-900', 'border-amber-200', 'border-amber-300');
+      btnFull.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+    }
+
+    await playNextAyahInSequence(1);
+  }
+
+  // Putar ayat berikutnya dalam playlist berurutan (auto-fetch jika belum ada di DOM)
+  async function playNextAyahInSequence(targetAyahNo) {
+    if (!isAutoPlayingSurah) return;
+
+    const banner = document.getElementById('modalAudioBanner');
+    const audioInfo = document.getElementById('audioPlayingInfo');
+
+    // Jika ayat target belum termuat (melewati chunk saat ini), ambil chunk berikutnya secara otomatis
+    while (targetAyahNo > currentLoadedAyatCount && currentLoadedAyatCount < currentSurahTotalAyat) {
+      if (audioInfo) {
+        audioInfo.innerHTML = `Mengambil ayat ${targetAyahNo}...`;
+        banner.classList.remove('hidden');
+      }
+      await fetchNextAyatChunk();
+    }
+
+    // Ambil URL audio dari cache
+    let audioUrl = loadedAyatAudioMap[targetAyahNo];
+    if (!audioUrl) {
+      stopCurrentAudio();
+      return;
+    }
+
+    // Bersihkan highlight ayat sebelumnya
+    if (currentPlayingAyahNo !== null && currentPlayingAyahNo !== targetAyahNo) {
+      const prevCard = document.getElementById(`ayat-${currentPlayingAyahNo}`);
+      if (prevCard) {
+        prevCard.classList.remove('border-amber-500', 'ring-2', 'ring-amber-400/50', 'bg-amber-50/40');
+        prevCard.classList.add('border-slate-200/90', 'bg-slate-50');
+      }
+      const prevBtn = document.getElementById(`btnPlayAyah-${currentPlayingAyahNo}`);
+      if (prevBtn) {
+        prevBtn.innerHTML = `<i class="fa-solid fa-play text-[10px]"></i><span>Audio</span>`;
+        prevBtn.classList.remove('bg-amber-600', 'text-white', 'border-amber-600');
+        prevBtn.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+      }
+    }
+
+    currentPlayingAyahNo = targetAyahNo;
+    const currentCard = document.getElementById(`ayat-${targetAyahNo}`);
+    const currentBtn = document.getElementById(`btnPlayAyah-${targetAyahNo}`);
+
+    // Auto-scroll halus & sorot border ayat yang sedang dibaca
+    if (currentCard) {
+      currentCard.classList.remove('border-slate-200/90', 'bg-slate-50');
+      currentCard.classList.add('border-amber-500', 'ring-2', 'ring-amber-400/50', 'bg-amber-50/40');
+      currentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    if (currentBtn) {
+      currentBtn.innerHTML = `<i class="fa-solid fa-pause text-[10px]"></i><span>Jeda</span>`;
+      currentBtn.classList.remove('bg-white', 'bg-amber-100', 'text-slate-600', 'text-amber-900', 'border-slate-200', 'border-amber-300');
+      currentBtn.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+    }
+
+    if (banner && audioInfo) {
+      audioInfo.innerHTML = `Memutar Surah <b>${currentSurahLatinName}</b> &bull; <b>Ayat ${targetAyahNo}</b> dari ${currentSurahTotalAyat} &bull; Qari: Misyari Rasyid`;
+      banner.classList.remove('hidden');
+    }
+
+    try {
+      globalAudio.src = audioUrl;
+      await globalAudio.play();
+    } catch (err) {
+      console.error(err);
+      stopCurrentAudio();
+    }
+  }
+
+  // Putar audio per ayat secara mandiri (dengan fitur Pause & Resume, auto-scroll, dan border highlight)
+  async function playAyatAudio(ayahNo, audioUrl) {
+    const card = document.getElementById(`ayat-${ayahNo}`);
+    const btn = document.getElementById(`btnPlayAyah-${ayahNo}`);
+    const banner = document.getElementById('modalAudioBanner');
+    const audioInfo = document.getElementById('audioPlayingInfo');
+
+    // Jika sebelumnya sedang dalam mode auto-play surah, matikan flag surah agar fokus ke ayat tunggal
+    isAutoPlayingSurah = false;
+
+    // KASUS 1: Ayat yang sama sedang berbunyi -> Pause (Jeda)
+    if (currentAudioMode === 'ayah' && currentPlayingAyahNo === ayahNo && !globalAudio.paused) {
+      globalAudio.pause();
+      if (btn) {
+        btn.innerHTML = `<i class="fa-solid fa-play text-[10px]"></i><span>Lanjut</span>`;
+        btn.classList.remove('bg-amber-600', 'text-white', 'border-amber-600');
+        btn.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+      }
+      if (audioInfo) {
+        audioInfo.innerHTML = `<span class="text-amber-700 italic font-semibold">(Dijeda)</span> Surah <b>${currentSurahLatinName}</b> &bull; <b>Ayat ${ayahNo}</b>`;
+      }
+      return;
+    }
+
+    // KASUS 2: Ayat yang sama sedang dijeda -> Resume (Lanjutkan pemutaran)
+    if (currentAudioMode === 'ayah' && currentPlayingAyahNo === ayahNo && globalAudio.paused && globalAudio.src) {
+      try {
+        await globalAudio.play();
+        if (btn) {
+          btn.innerHTML = `<i class="fa-solid fa-pause text-[10px]"></i><span>Jeda</span>`;
+          btn.classList.remove('bg-white', 'bg-amber-100', 'text-slate-600', 'text-amber-900', 'border-slate-200', 'border-amber-300');
+          btn.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+        }
+        if (audioInfo) {
+          audioInfo.innerHTML = `Memutar Surah <b>${currentSurahLatinName}</b> &bull; <b>Ayat ${ayahNo}</b> &bull; Qari: Syaikh Misyari Rasyid`;
+          banner.classList.remove('hidden');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return;
+    }
+
+    // KASUS 3: Memulai pemutaran ayat baru dari awal
+    stopCurrentAudio();
+
+    if (!audioUrl) {
+      alert('Audio untuk ayat ini belum tersedia.');
+      return;
+    }
+
+    // Perbaiki link cdn.alquran.cloud yang offline ke CDN resmi Islamic Network yang aktif
+    let resolvedAudioUrl = audioUrl;
+    if (resolvedAudioUrl.includes('cdn.alquran.cloud/media/audio/ayah/ar.alafasy/')) {
+      const globalAyahId = resolvedAudioUrl.split('/').pop().trim();
+      resolvedAudioUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${globalAyahId}.mp3`;
+    }
+
+    // Berikan indikasi loading pada tombol ayat
+    if (btn) {
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[10px]"></i><span>Memuat...</span>`;
+    }
+
+    try {
+      globalAudio.src = resolvedAudioUrl;
+      await globalAudio.play();
+
+      currentAudioMode = 'ayah';
+      currentPlayingAyahNo = ayahNo;
+
+      // Highlight border & kartu ayat
+      if (card) {
+        card.classList.remove('border-slate-200/90', 'bg-slate-50');
+        card.classList.add('border-amber-500', 'ring-2', 'ring-amber-400/50', 'bg-amber-50/40');
+        // Auto-scroll halus ke ayat yang sedang diputar
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Update button ayat ke state playing
+      if (btn) {
+        btn.innerHTML = `<i class="fa-solid fa-pause text-[10px]"></i><span>Jeda</span>`;
+        btn.classList.remove('bg-white', 'bg-amber-100', 'text-slate-600', 'text-amber-900', 'border-slate-200', 'border-amber-300');
+        btn.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+      }
+
+      // Update info banner
+      if (banner && audioInfo) {
+        audioInfo.innerHTML = `Memutar Surah <b>${currentSurahLatinName}</b> &bull; <b>Ayat ${ayahNo}</b> &bull; Qari: Syaikh Misyari Rasyid`;
+        banner.classList.remove('hidden');
+      }
+    } catch (err) {
+      console.error(err);
+      stopCurrentAudio();
+      alert('Tidak dapat memutar audio ayat ini. Silakan periksa koneksi internet Anda.');
+    }
+  }
+
   // Buka Modal Detail Ayat (Load Chunk Pertama 1-30)
   async function openSurahDetail(nomor, namaLatin, namaArab, arti, totalAyat) {
+    // Hentikan audio jika sebelumnya ada yang sedang berputar
+    stopCurrentAudio();
+    loadedAyatAudioMap = {}; // Reset cache map audio surah baru
+
     const modal = document.getElementById('ayatModal');
     const title = document.getElementById('modalSurahTitle');
     const subtitle = document.getElementById('modalSurahSubtitle');
@@ -371,6 +710,7 @@ include 'includes/header.php';
 
     currentSurahNumber = nomor;
     currentSurahTotalAyat = totalAyat;
+    currentSurahLatinName = namaLatin;
     currentLoadedAyatCount = 0;
     highestVisibleAyah = 1; // Reset ke ayat 1 saat buka surah baru
 
@@ -510,18 +850,39 @@ include 'includes/header.php';
       if (data.status && data.data) {
         const listAyat = Array.isArray(data.data) ? data.data : [data.data];
         
+        // Simpan audio URL ke cache loadedAyatAudioMap agar siap dipakai auto-play
+        listAyat.forEach(item => {
+          let aUrl = item.audio || '';
+          if (aUrl.includes('cdn.alquran.cloud/media/audio/ayah/ar.alafasy/')) {
+            const globalAyahId = aUrl.split('/').pop().trim();
+            aUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${globalAyahId}.mp3`;
+          }
+          loadedAyatAudioMap[item.ayah] = aUrl;
+        });
+
         const htmlAyat = listAyat.map(ayat => {
           const ayahNo = ayat.ayah;
           const ayahId = `ayat-${ayahNo}`;
+          const audioUrl = loadedAyatAudioMap[ayahNo] || ayat.audio || '';
 
           return `
             <div id="${ayahId}" class="p-5 sm:p-6 rounded-3xl bg-slate-50 border border-slate-200/90 space-y-4 transition-all duration-300 hover:border-amber-300">
-              <!-- Baris Nomor Ayat -->
+              <!-- Baris Nomor Ayat & Action Button -->
               <div class="flex items-center justify-between border-b border-slate-200/80 pb-3">
-                <span class="w-9 h-9 rounded-xl bg-amber-100/80 text-amber-900 text-xs font-extrabold flex items-center justify-center shadow-inner">
-                  ${ayahNo}
-                </span>
-                <span class="text-xs text-slate-400 font-medium">Ayat ke-${ayahNo}</span>
+                <div class="flex items-center gap-2">
+                  <span class="w-9 h-9 rounded-xl bg-amber-100/80 text-amber-900 text-xs font-extrabold flex items-center justify-center shadow-inner">
+                    ${ayahNo}
+                  </span>
+                  <span class="text-xs text-slate-400 font-medium">Ayat ke-${ayahNo}</span>
+                </div>
+
+                <!-- Tombol Putar Audio Ayat -->
+                ${audioUrl ? `
+                  <button id="btnPlayAyah-${ayahNo}" onclick="playAyatAudio(${ayahNo}, '${audioUrl}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-amber-50 hover:border-amber-300 text-slate-700 text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95" title="Dengarkan Qari Misyari Rasyid untuk ayat ${ayahNo}">
+                    <i class="fa-solid fa-play text-[10px]"></i>
+                    <span>Audio</span>
+                  </button>
+                ` : ''}
               </div>
 
               <!-- Lapisan 1: Kaligrafi Arab Berharakat -->
@@ -605,6 +966,7 @@ include 'includes/header.php';
   }
 
   function closeAyatModal() {
+    stopCurrentAudio();
     document.getElementById('ayatModal').classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
   }
