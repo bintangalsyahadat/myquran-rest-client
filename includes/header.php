@@ -94,35 +94,13 @@
           </a>
         </nav>
 
-        <!-- Right Side: Repository & Mobile Hamburger -->
+        <!-- Right Side: Repository Link Button -->
         <div class="flex items-center gap-2 sm:gap-3">
-          <!-- Repo Link -->
           <a href="https://github.com/bintangalsyahadat/myquran-rest-client" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl font-semibold flex items-center gap-2 border border-slate-200/80 transition-all hover:shadow-sm">
             <i class="fa-brands fa-github text-sm"></i>
-            <span class="hidden sm:inline">Repository</span>
+            <span>Repository</span>
           </a>
-
-          <!-- Mobile Hamburger Toggle Button -->
-          <button id="mobileMenuBtn" type="button" class="md:hidden w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition border border-slate-200/80" aria-label="Toggle Navigation">
-            <i id="menuIcon" class="fa-solid fa-bars text-base"></i>
-          </button>
         </div>
-      </div>
-
-      <!-- Mobile Dropdown Menu Drawer -->
-      <div id="mobileMenuDropdown" class="hidden md:hidden border-t border-slate-200/80 py-3 space-y-1 transition-all">
-        <a href="index.php" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-sm <?= ($currentPage == 'index.php') ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-100'; ?>">
-          <i class="fa-solid fa-clock w-5 text-center"></i> Jadwal Sholat
-        </a>
-        <a href="quran.php" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-sm <?= ($currentPage == 'quran.php') ? 'bg-amber-50 text-amber-700' : 'text-slate-600 hover:bg-slate-100'; ?>">
-          <i class="fa-solid fa-book-quran w-5 text-center"></i> Al-Qur'an
-        </a>
-        <a href="doa.php" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-sm <?= ($currentPage == 'doa.php') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-100'; ?>">
-          <i class="fa-solid fa-hands-praying w-5 text-center"></i> Doa Harian
-        </a>
-        <a href="asmaul-husna.php" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-sm <?= ($currentPage == 'asmaul-husna.php') ? 'bg-purple-50 text-purple-700' : 'text-slate-600 hover:bg-slate-100'; ?>">
-          <i class="fa-solid fa-star-and-crescent w-5 text-center"></i> Asmaul Husna
-        </a>
       </div>
     </div>
   </header>
@@ -154,23 +132,5 @@
       <span>Husna</span>
     </a>
   </nav>
-
-  <script>
-    // Hamburger menu toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenuDropdown = document.getElementById('mobileMenuDropdown');
-    const menuIcon = document.getElementById('menuIcon');
-
-    if (mobileMenuBtn && mobileMenuDropdown) {
-      mobileMenuBtn.addEventListener('click', () => {
-        mobileMenuDropdown.classList.toggle('hidden');
-        if (mobileMenuDropdown.classList.contains('hidden')) {
-          menuIcon.className = 'fa-solid fa-bars text-base';
-        } else {
-          menuIcon.className = 'fa-solid fa-xmark text-base';
-        }
-      });
-    }
-  </script>
 
   <main class="flex-grow">
