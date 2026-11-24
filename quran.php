@@ -38,8 +38,9 @@ include 'includes/header.php';
   </div>
 
   <!-- HEADER BAR & SEARCH BAR SECTION (Hidden secara default, hanya tampil jika data surah berhasil dimuat) -->
-  <section id="surahHeaderSection" class="hidden glass-card rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-    <div class="flex items-center justify-between sm:justify-start gap-3">
+  <section id="surahHeaderSection" class="hidden glass-card rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <!-- Title & Badge -->
+    <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg shadow-inner shrink-0">
           <i class="fa-solid fa-list"></i>
@@ -49,15 +50,32 @@ include 'includes/header.php';
           <p class="text-xs text-slate-400">Pilih surah untuk membaca ayat-ayatnya</p>
         </div>
       </div>
-      <!-- Badge di mobile -->
-      <span id="surahCountBadge" class="sm:hidden text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-3 py-1 rounded-xl shrink-0 whitespace-nowrap">
+      <!-- Badge di mobile sebaris dengan judul -->
+      <span id="surahCountBadge" class="md:hidden text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-3 py-1 rounded-xl shrink-0 whitespace-nowrap">
         114 Surah
       </span>
     </div>
 
-    <!-- Badge di desktop -->
-    <div id="surahCountBadgeDesktop" class="hidden sm:inline-flex text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-4 py-2 rounded-2xl shrink-0 whitespace-nowrap">
-      Total: 114 Surah
+    <!-- Search Input & Badge Desktop -->
+    <div class="flex items-center gap-3 w-full md:w-auto">
+      <div class="relative w-full md:w-80">
+        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input 
+          type="text" 
+          id="searchSurahInput" 
+          placeholder="Cari surah (contoh: Yasin, Al-Kahf, 18)..." 
+          class="w-full pl-11 pr-10 py-2.5 bg-white border border-slate-200/90 rounded-2xl text-xs sm:text-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-600 transition shadow-sm"
+        >
+        <!-- Tombol Clear Search -->
+        <button id="clearSearchBtn" type="button" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center text-xs transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Badge di desktop -->
+      <div id="surahCountBadgeDesktop" class="hidden md:inline-flex text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-4 py-2.5 rounded-2xl shrink-0 whitespace-nowrap">
+        Total: 114 Surah
+      </div>
     </div>
   </section>
 
@@ -167,9 +185,32 @@ include 'includes/header.php';
   // Render Card Surah Grid
   function renderSurahs(surahs) {
     const grid = document.getElementById('surahGrid');
+    const badgeMobile = document.getElementById('surahCountBadge');
+    const badgeDesktop = document.getElementById('surahCountBadgeDesktop');
+
+    if (badgeMobile) badgeMobile.textContent = `${surahs.length} Surah`;
+    if (badgeDesktop) badgeDesktop.textContent = `Total: ${surahs.length} Surah`;
 
     if (surahs.length === 0) {
-      grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">Surah tidak ditemukan.</div>`;
+      grid.innerHTML = `
+        <div class="col-span-full py-16 px-4">
+          <div class="max-w-md mx-auto text-center bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-4">
+            <div class="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl mx-auto shadow-inner">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="space-y-1">
+              <h3 class="font-extrabold text-base text-slate-900">Surah Tidak Ditemukan</h3>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Tidak ada nama surah, arti, atau nomor yang cocok dengan kata kunci pencarian Anda.
+              </p>
+            </div>
+            <button onclick="clearSearch()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all">
+              <i class="fa-solid fa-xmark"></i>
+              <span>Bersihkan Pencarian</span>
+            </button>
+          </div>
+        </div>
+      `;
       return;
     }
 
@@ -199,6 +240,48 @@ include 'includes/header.php';
         </div>
       `;
     }).join('');
+  }
+
+  // Real-time Search Filter Surah
+  const searchInput = document.getElementById('searchSurahInput');
+  const clearBtn = document.getElementById('clearSearchBtn');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const keyword = e.target.value.toLowerCase().trim();
+
+      // Tampilkan/sembunyikan tombol clear
+      if (clearBtn) {
+        if (keyword.length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+
+      // Filter berdasarkan nama Latin, arti, atau nomor surah
+      const filtered = allSurahs.filter(s => {
+        const namaLatin = (s.name_id || s.nama_latin || '').toLowerCase();
+        const arti = (s.translation_id || s.arti || '').toLowerCase();
+        const nomor = String(s.number || s.nomor);
+        return namaLatin.includes(keyword) || arti.includes(keyword) || nomor === keyword;
+      });
+
+      renderSurahs(filtered);
+    });
+  }
+
+  function clearSearch() {
+    if (searchInput) {
+      searchInput.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
+      renderSurahs(allSurahs);
+      searchInput.focus();
+    }
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', clearSearch);
   }
 
   // Inisialisasi awal
