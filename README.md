@@ -65,10 +65,18 @@ git checkout -b feature/halaman-asmaul-husna
 ```
 
 #### 4. Kerjakan Fitur & Simpan Perubahan (Commit)
-Edit file halaman Anda sesuai spesifikasi. Simpan perubahan dengan pesan commit yang jelas:
+Edit file halaman Anda sesuai spesifikasi. Simpan perubahan dengan pesan commit menggunakan format **Tag Prefix** (`[TAG]`):
 ```bash
+# Daftar Tag Standar:
+# [ADD] -> Menambah fitur/komponen baru
+# [IMP] -> Meningkatkan/mempercantik fitur/UI (Improvement)
+# [FIX] -> Memperbaiki bug/error
+# [DOC] -> Mengubah dokumentasi
+# [REF] -> Refactor/merapikan kode
+
+# Contoh:
 git add .
-git commit -m "feat: implement 114 surah list and audio murottal"
+git commit -m "[ADD] render 114 surah grid with error state"
 ```
 
 #### 5. Push ke GitHub

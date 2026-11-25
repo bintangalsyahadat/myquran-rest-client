@@ -46,12 +46,23 @@ AI Assistant wajib mengikuti alur **GitHub Flow**:
 * Menu 3 (Doa Harian - Dev 2): `feature/halaman-doa`
 * Menu 4 (Asmaul Husna - Dev 3): `feature/halaman-asmaul-husna`
 
-### Konvensi Commit Message (Conventional Commits):
-* `feat(quran): integrate 114 surah list and murottal audio player`
-* `feat(doa): implement 227+ prayers with latin text and pagination`
-* `feat(husna): add 99 asmaul husna cards and hijri calendar widget`
-* `feat(sholat): add prayer times schedule and city search`
-* `fix(<halaman>): resolve issue with api fetch`
+### Konvensi Commit Message (Tag Prefix Format):
+Format: `[TAG] <deskripsi perubahan singkat dan jelas>`
+
+Daftar Tag Standar yang Wajib Digunakan:
+* **`[ADD]`** : Menambahkan fitur baru, halaman baru, atau komponen baru.
+  * Contoh: `[ADD] render 114 surah grid and error state`
+  * Contoh: `[ADD] modal dialog for reading ayah`
+* **`[IMP]`** *(Improvement)* : Meningkatkan fitur, mempercantik tampilan UI, atau optimasi performa kode.
+  * Contoh: `[IMP] responsive mobile layout on surah header`
+  * Contoh: `[IMP] audio player auto scroll highlight`
+* **`[FIX]`** : Memperbaiki bug, link error, atau kendala fetch API.
+  * Contoh: `[FIX] resolve api fetch error on ayah details`
+  * Contoh: `[FIX] handle mobile badge overflow`
+* **`[DOC]`** : Mengubah atau memperbarui dokumentasi (README / AGENTS.md).
+  * Contoh: `[DOC] update git workflow rules and commit tags`
+* **`[REF]`** *(Refactor)* : Merapikan struktur kode tanpa mengubah fungsionalitas.
+  * Contoh: `[REF] reorganize javascript helper functions`
 
 ---
 
