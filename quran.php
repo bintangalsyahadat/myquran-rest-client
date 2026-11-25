@@ -35,47 +35,84 @@ include 'includes/header.php';
         <div class="text-xs text-amber-200/80 mt-1">Makkiyyah & Madaniyyah</div>
       </div>
     </div>
+
+    <!-- WIDGET TERAKHIR DIBACA (LAST READ BOOKMARK) -->
+    <div id="lastReadBanner" class="hidden relative z-10 mt-8 pt-6 border-t border-white/10">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-black/25 backdrop-blur-xl border border-white/15 px-5 py-4 rounded-3xl shadow-lg">
+        <div class="flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-base shadow-md shadow-amber-500/20 shrink-0">
+            <i class="fa-solid fa-bookmark text-white"></i>
+          </div>
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-amber-300/80">Terakhir Dibaca</div>
+            <div class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2 mt-0.5">
+              <span id="lastReadSurahName">Al-Fatihah</span>
+              <span id="lastReadAyahText" class="text-xs font-semibold text-amber-200/80 bg-white/10 px-2 py-0.5 rounded-lg border border-white/10">Ayat 1</span>
+            </div>
+          </div>
+        </div>
+        <button id="btnResumeLastRead" type="button" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs shadow-md shadow-amber-500/20 transition-all duration-200 hover:scale-[1.03] active:scale-95 shrink-0 self-start sm:self-auto">
+          <span class="text-white">Lanjut Membaca</span>
+          <i class="fa-solid fa-arrow-right text-[11px] text-white"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- HEADER BAR & SEARCH BAR SECTION (Hidden secara default, hanya tampil jika data surah berhasil dimuat) -->
-  <section id="surahHeaderSection" class="hidden glass-card rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <!-- Title & Badge -->
-    <div class="flex items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg shadow-inner shrink-0">
-          <i class="fa-solid fa-list"></i>
+  <section id="surahHeaderSection" class="hidden glass-card rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Title & Badge -->
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg shadow-inner shrink-0">
+            <i class="fa-solid fa-list"></i>
+          </div>
+          <div>
+            <h2 class="text-sm sm:text-base font-extrabold text-slate-900">Daftar Surah Al-Qur'an</h2>
+            <p class="text-xs text-slate-400">Pilih surah untuk membaca ayat-ayatnya</p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-sm sm:text-base font-extrabold text-slate-900">Daftar Surah Al-Qur'an</h2>
-          <p class="text-xs text-slate-400">Pilih surah untuk membaca ayat-ayatnya</p>
+        <!-- Badge di mobile sebaris dengan judul -->
+        <span id="surahCountBadge" class="md:hidden text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-3 py-1 rounded-xl shrink-0 whitespace-nowrap">
+          114 Surah
+        </span>
+      </div>
+
+      <!-- Search Input & Badge Desktop -->
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <div class="relative w-full md:w-80">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input 
+            type="text" 
+            id="searchSurahInput" 
+            placeholder="Cari surah (contoh: Yasin, Al-Kahf, 18)..." 
+            class="w-full pl-11 pr-10 py-2.5 bg-white border border-slate-200/90 rounded-2xl text-xs sm:text-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-600 transition shadow-sm"
+          >
+          <!-- Tombol Clear Search -->
+          <button id="clearSearchBtn" type="button" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center text-xs transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Badge di desktop -->
+        <div id="surahCountBadgeDesktop" class="hidden md:inline-flex text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-4 py-2.5 rounded-2xl shrink-0 whitespace-nowrap">
+          Total: 114 Surah
         </div>
       </div>
-      <!-- Badge di mobile sebaris dengan judul -->
-      <span id="surahCountBadge" class="md:hidden text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-3 py-1 rounded-xl shrink-0 whitespace-nowrap">
-        114 Surah
-      </span>
     </div>
 
-    <!-- Search Input & Badge Desktop -->
-    <div class="flex items-center gap-3 w-full md:w-auto">
-      <div class="relative w-full md:w-80">
-        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-        <input 
-          type="text" 
-          id="searchSurahInput" 
-          placeholder="Cari surah (contoh: Yasin, Al-Kahf, 18)..." 
-          class="w-full pl-11 pr-10 py-2.5 bg-white border border-slate-200/90 rounded-2xl text-xs sm:text-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-600 transition shadow-sm"
-        >
-        <!-- Tombol Clear Search -->
-        <button id="clearSearchBtn" type="button" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center text-xs transition">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <!-- Badge di desktop -->
-      <div id="surahCountBadgeDesktop" class="hidden md:inline-flex text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-4 py-2.5 rounded-2xl shrink-0 whitespace-nowrap">
-        Total: 114 Surah
-      </div>
+    <!-- FILTER TABS: SEMUA, MAKKIYYAH, MADANIYYAH -->
+    <div class="pt-2 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <button type="button" onclick="filterByRevelation('all')" id="filterTab-all" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-amber-600 text-white shadow-sm shadow-amber-600/20">
+        Semua (114)
+      </button>
+      <button type="button" onclick="filterByRevelation('makkiyyah')" id="filterTab-makkiyyah" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+        Makkiyyah (86)
+      </button>
+      <button type="button" onclick="filterByRevelation('madaniyyah')" id="filterTab-madaniyyah" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+        Madaniyyah (28)
+      </button>
     </div>
   </section>
 
@@ -118,6 +155,7 @@ include 'includes/header.php';
         if (badgeDesktop) badgeDesktop.textContent = `Total: ${allSurahs.length} Surah`;
         // Tampilkan header bar hanya ketika data surah berhasil didapat
         if (headerSection) headerSection.classList.remove('hidden');
+        loadLastReadBookmark(); // Tampilkan widget bookmark jika ada
         renderSurahs(allSurahs);
       } else {
         if (headerSection) headerSection.classList.add('hidden');
@@ -242,6 +280,52 @@ include 'includes/header.php';
     }).join('');
   }
 
+  let currentFilterRevelation = 'all';
+
+  // Filter Pills: Semua, Makkiyyah, Madaniyyah
+  function filterByRevelation(type) {
+    currentFilterRevelation = type;
+    
+    // Update styling tabs
+    ['all', 'makkiyyah', 'madaniyyah'].forEach(tab => {
+      const btn = document.getElementById(`filterTab-${tab}`);
+      if (!btn) return;
+      if (tab === type) {
+        btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-amber-600 text-white shadow-sm shadow-amber-600/20';
+      } else {
+        btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200';
+      }
+    });
+
+    applySurahFilters();
+  }
+
+  function applySurahFilters() {
+    const keyword = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+    const filtered = allSurahs.filter(s => {
+      const namaLatin = (s.name_id || s.nama_latin || '').toLowerCase();
+      const arti = (s.translation_id || s.arti || '').toLowerCase();
+      const nomor = String(s.number || s.nomor);
+      const tempatTurun = (s.revelation_id || s.tempat_turun || '').toLowerCase();
+
+      // Cocokkan keyword
+      const matchKeyword = !keyword || namaLatin.includes(keyword) || arti.includes(keyword) || nomor === keyword;
+
+      // Cocokkan tempat turun
+      let matchRevelation = true;
+      if (currentFilterRevelation === 'makkiyyah') {
+        matchRevelation = tempatTurun.includes('makki') || tempatTurun.includes('mekah');
+      } else if (currentFilterRevelation === 'madaniyyah') {
+        matchRevelation = tempatTurun.includes('madani') || tempatTurun.includes('madinah');
+      }
+
+      return matchKeyword && matchRevelation;
+    });
+
+    renderSurahs(filtered);
+  }
+
   // Real-time Search Filter Surah
   const searchInput = document.getElementById('searchSurahInput');
   const clearBtn = document.getElementById('clearSearchBtn');
@@ -259,15 +343,7 @@ include 'includes/header.php';
         }
       }
 
-      // Filter berdasarkan nama Latin, arti, atau nomor surah
-      const filtered = allSurahs.filter(s => {
-        const namaLatin = (s.name_id || s.nama_latin || '').toLowerCase();
-        const arti = (s.translation_id || s.arti || '').toLowerCase();
-        const nomor = String(s.number || s.nomor);
-        return namaLatin.includes(keyword) || arti.includes(keyword) || nomor === keyword;
-      });
-
-      renderSurahs(filtered);
+      applySurahFilters();
     });
   }
 
@@ -275,8 +351,61 @@ include 'includes/header.php';
     if (searchInput) {
       searchInput.value = '';
       if (clearBtn) clearBtn.classList.add('hidden');
-      renderSurahs(allSurahs);
+      applySurahFilters();
       searchInput.focus();
+    }
+  }
+
+  // Load dan Tampilkan Widget Terakhir Dibaca dari localStorage
+  function loadLastReadBookmark() {
+    try {
+      const raw = localStorage.getItem('myquran_last_read');
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (!data || !data.surahNumber) return;
+
+      const banner = document.getElementById('lastReadBanner');
+      const nameEl = document.getElementById('lastReadSurahName');
+      const ayahEl = document.getElementById('lastReadAyahText');
+      const btn = document.getElementById('btnResumeLastRead');
+
+      if (banner && nameEl && btn) {
+        nameEl.textContent = data.surahName || `Surah ${data.surahNumber}`;
+        if (ayahEl) ayahEl.textContent = `(Ayat ${data.ayahNumber || 1})`;
+        btn.onclick = () => {
+          openSurahDetail(
+            data.surahNumber, 
+            data.surahName, 
+            data.surahArab || '', 
+            data.arti || '', 
+            data.totalAyat || 0,
+            data.ayahNumber || 1
+          );
+        };
+        banner.classList.remove('hidden');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // Simpan Terakhir Dibaca ke localStorage
+  function saveLastReadBookmark(ayahNo) {
+    if (!currentSurahNumber || !ayahNo) return;
+    try {
+      const payload = {
+        surahNumber: currentSurahNumber,
+        surahName: currentSurahLatinName,
+        surahArab: currentSurahArabName,
+        arti: currentSurahArti,
+        totalAyat: currentSurahTotalAyat,
+        ayahNumber: ayahNo,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('myquran_last_read', JSON.stringify(payload));
+      loadLastReadBookmark();
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -293,20 +422,44 @@ include 'includes/header.php';
   <div class="bg-white w-full max-w-4xl max-h-[92vh] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-slate-100">
     
     <!-- Modal Header -->
-    <div class="p-5 sm:p-6 border-b border-slate-200/80 flex items-center justify-between bg-gradient-to-r from-amber-50/60 via-white to-white">
+    <div class="p-4 sm:p-6 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-amber-50/60 via-white to-white">
       <div>
         <h3 id="modalSurahTitle" class="text-lg sm:text-xl font-extrabold text-slate-900 flex items-center gap-2">
           <span>Nama Surah</span>
         </h3>
         <p id="modalSurahSubtitle" class="text-xs text-slate-500 mt-0.5">Arti & rincian ayat</p>
       </div>
-      <div class="flex items-center gap-2">
+      
+      <!-- Right Side Header: Jump to Ayah, Audio, & Close -->
+      <div class="flex items-center gap-2 self-end sm:self-auto flex-wrap">
+        <!-- Form Cari / Menuju Ayat -->
+        <div class="flex items-center gap-1.5 bg-slate-100/90 p-1 rounded-xl border border-slate-200/80 text-xs">
+          <span class="text-slate-400 pl-2 text-[11px] font-semibold hidden md:inline">Ayat</span>
+          <input 
+            type="number" 
+            id="jumpAyahInput" 
+            min="1" 
+            placeholder="No" 
+            class="w-12 sm:w-14 px-2 py-1 bg-white border border-slate-200 rounded-lg text-center font-bold text-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+            onkeydown="if(event.key==='Enter') jumpToAyah()"
+          >
+          <button 
+            type="button" 
+            onclick="jumpToAyah()" 
+            class="px-2.5 py-1 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-bold text-[11px] transition shadow-xs flex items-center gap-1"
+            title="Buka Ayat"
+          >
+            <span>Buka</span>
+          </button>
+        </div>
+
         <!-- Tombol Putar Full Surah Audio -->
         <button id="btnPlayFullSurah" onclick="toggleFullSurahAudio()" class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all duration-200 hover:scale-105 active:scale-95" title="Putar Murottal Full Surah">
           <i id="iconPlayFullSurah" class="fa-solid fa-play text-white"></i>
           <span id="labelPlayFullSurah" class="hidden sm:inline">Putar Surah</span>
         </button>
-        <button onclick="closeAyatModal()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition" title="Tutup Modal">
+
+        <button onclick="closeAyatModal()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition shrink-0" title="Tutup Modal">
           <i class="fa-solid fa-xmark text-sm"></i>
         </button>
       </div>
@@ -351,6 +504,12 @@ include 'includes/header.php';
   </div>
 </div>
 
+<!-- ================= NOTIFIKASI TOAST (COPY CLIPBOARD) ================= -->
+<div id="toastNotification" class="fixed bottom-6 right-6 z-[80] bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-2xl border border-slate-800 flex items-center gap-2.5 transition-all duration-300 opacity-0 translate-y-3 pointer-events-none">
+  <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+  <span id="toastMessage">Ayat berhasil disalin ke clipboard!</span>
+</div>
+
 <!-- ================= CUSTOM CONFIRMATION MODAL ================= -->
 <div id="confirmSwitchModal" class="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-all">
   <div class="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl border border-slate-100 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
@@ -379,6 +538,8 @@ include 'includes/header.php';
   let currentSurahNumber = null;
   let currentSurahTotalAyat = 0;
   let currentSurahLatinName = '';
+  let currentSurahArabName = '';
+  let currentSurahArti = '';
   let currentLoadedAyatCount = 0;
   let highestVisibleAyah = 1; // Menyimpan nomor ayat tertinggi yang benar-benar pernah terlihat di layar
   const CHUNK_SIZE = 30; // Batas maksimal per request dari API MyQuran
@@ -389,6 +550,105 @@ include 'includes/header.php';
   let currentPlayingAyahNo = null;
   let isAutoPlayingSurah = false; // Flag apakah sedang mode auto-play berurutan seluruh ayat
   let loadedAyatAudioMap = {}; // Cache map nomor ayat -> audio URL
+  let loadedAyatDataMap = {}; // Cache data teks ayat untuk keperluan copy clipboard
+
+  // Tampilkan Toast Notifikasi
+  let toastTimer = null;
+  function showToast(message) {
+    const toast = document.getElementById('toastNotification');
+    const msgEl = document.getElementById('toastMessage');
+    if (!toast || !msgEl) return;
+
+    msgEl.textContent = message;
+    toast.classList.remove('opacity-0', 'translate-y-3', 'pointer-events-none');
+    toast.classList.add('opacity-100', 'translate-y-0');
+
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('opacity-100', 'translate-y-0');
+      toast.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
+    }, 2500);
+  }
+
+  // Fitur Salin Teks Ayat ke Clipboard
+  function copyAyahText(ayahNo) {
+    const data = loadedAyatDataMap[ayahNo];
+    if (!data) {
+      showToast('Data ayat belum siap disalin.');
+      return;
+    }
+
+    const textToCopy = `QS. ${currentSurahLatinName} (${currentSurahNumber}:${ayahNo})\n\n${data.arab}\n\n"${data.latin || ''}"\n\nArtinya: ${data.text || ''}\n\n(Dikutip via MyQuran Platform - myquran.munn.web.id)`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToast(`Ayat ke-${ayahNo} berhasil disalin!`);
+      }).catch(() => {
+        fallbackCopyText(textToCopy, ayahNo);
+      });
+    } else {
+      fallbackCopyText(textToCopy, ayahNo);
+    }
+  }
+
+  function fallbackCopyText(text, ayahNo) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      showToast(`Ayat ke-${ayahNo} berhasil disalin!`);
+    } catch (err) {
+      showToast('Gagal menyalin teks ayat.');
+    }
+    document.body.removeChild(textarea);
+  }
+
+  // Fitur Lompat Langsung ke Nomor Ayat (Jump to Ayah)
+  async function jumpToAyah() {
+    const input = document.getElementById('jumpAyahInput');
+    if (!input) return;
+
+    const targetAyah = parseInt(input.value, 10);
+    if (isNaN(targetAyah) || targetAyah < 1 || targetAyah > currentSurahTotalAyat) {
+      alert(`Silakan masukkan nomor ayat antara 1 s/d ${currentSurahTotalAyat}.`);
+      input.focus();
+      return;
+    }
+
+    // Jika ayat target belum dimuat ke DOM, muat chunk bertahap hingga ayat tersebut termuat
+    const banner = document.getElementById('modalAudioBanner');
+    const audioInfo = document.getElementById('audioPlayingInfo');
+
+    while (targetAyah > currentLoadedAyatCount && currentLoadedAyatCount < currentSurahTotalAyat) {
+      if (audioInfo) {
+        audioInfo.innerHTML = `Memuat ayat untuk mencapai nomor ${targetAyah}...`;
+        banner.classList.remove('hidden');
+      }
+      await fetchNextAyatChunk();
+    }
+
+    if (banner && (!currentAudioMode || globalAudio.paused)) {
+      banner.classList.add('hidden');
+    }
+
+    // Scroll langsung ke kartu ayat target
+    const targetCard = document.getElementById(`ayat-${targetAyah}`);
+    if (targetCard) {
+      targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      targetCard.classList.add('border-amber-500', 'ring-2', 'ring-amber-400/50');
+      setTimeout(() => {
+        if (currentPlayingAyahNo !== targetAyah) {
+          targetCard.classList.remove('border-amber-500', 'ring-2', 'ring-amber-400/50');
+        }
+      }, 2000);
+    }
+
+    input.value = '';
+  }
 
   // Event listener audio global saat selesai
   globalAudio.addEventListener('ended', async () => {
@@ -691,10 +951,11 @@ include 'includes/header.php';
   }
 
   // Buka Modal Detail Ayat (Load Chunk Pertama 1-30)
-  async function openSurahDetail(nomor, namaLatin, namaArab, arti, totalAyat) {
+  async function openSurahDetail(nomor, namaLatin, namaArab, arti, totalAyat, initialAyahToScroll = null) {
     // Hentikan audio jika sebelumnya ada yang sedang berputar
     stopCurrentAudio();
     loadedAyatAudioMap = {}; // Reset cache map audio surah baru
+    loadedAyatDataMap = {}; // Reset cache map data teks surah baru
 
     const modal = document.getElementById('ayatModal');
     const title = document.getElementById('modalSurahTitle');
@@ -704,8 +965,10 @@ include 'includes/header.php';
     currentSurahNumber = nomor;
     currentSurahTotalAyat = totalAyat;
     currentSurahLatinName = namaLatin;
+    currentSurahArabName = namaArab;
+    currentSurahArti = arti;
     currentLoadedAyatCount = 0;
-    highestVisibleAyah = 1; // Reset ke ayat 1 saat buka surah baru
+    highestVisibleAyah = initialAyahToScroll || 1; // Set ke ayat awal jika dari bookmark
 
     title.innerHTML = `${namaLatin} <span class="font-arabic font-normal text-amber-700 ml-2">(${namaArab})</span>`;
     subtitle.innerHTML = `Arti: ${arti} &bull; Total: ${totalAyat} Ayat`;
@@ -731,6 +994,21 @@ include 'includes/header.php';
 
     // Ambil 30 ayat pertama
     await fetchNextAyatChunk();
+
+    // Jika dipanggil dengan ayat tujuan tertentu (dari bookmark terakhir dibaca), muat chunk dan scroll ke ayat tersebut
+    if (initialAyahToScroll && initialAyahToScroll > 1) {
+      while (initialAyahToScroll > currentLoadedAyatCount && currentLoadedAyatCount < currentSurahTotalAyat) {
+        await fetchNextAyatChunk();
+      }
+      setTimeout(() => {
+        const targetCard = document.getElementById(`ayat-${initialAyahToScroll}`);
+        if (targetCard) {
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetCard.classList.add('border-amber-500', 'ring-2', 'ring-amber-400/50');
+          setTimeout(() => targetCard.classList.remove('border-amber-500', 'ring-2', 'ring-amber-400/50'), 2500);
+        }
+      }, 300);
+    }
   }
 
   // State untuk pending aksi konfirmasi (navigasi atau tutup modal)
@@ -801,6 +1079,7 @@ include 'includes/header.php';
               const ayahNumber = parseInt(rawId.replace('ayat-', ''), 10);
               if (!isNaN(ayahNumber) && ayahNumber > highestVisibleAyah) {
                 highestVisibleAyah = ayahNumber;
+                saveLastReadBookmark(highestVisibleAyah);
               }
             }
           }
@@ -856,7 +1135,7 @@ include 'includes/header.php';
       if (data.status && data.data) {
         const listAyat = Array.isArray(data.data) ? data.data : [data.data];
         
-        // Simpan audio URL ke cache loadedAyatAudioMap agar siap dipakai auto-play
+        // Simpan audio URL & data ayat ke cache loadedAyatAudioMap & loadedAyatDataMap
         listAyat.forEach(item => {
           let aUrl = item.audio || '';
           if (aUrl.includes('cdn.alquran.cloud/media/audio/ayah/ar.alafasy/')) {
@@ -864,6 +1143,11 @@ include 'includes/header.php';
             aUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${globalAyahId}.mp3`;
           }
           loadedAyatAudioMap[item.ayah] = aUrl;
+          loadedAyatDataMap[item.ayah] = {
+            arab: item.arab,
+            latin: item.latin || '',
+            text: item.text || item.artinya || ''
+          };
         });
 
         const htmlAyat = listAyat.map(ayat => {
@@ -882,13 +1166,21 @@ include 'includes/header.php';
                   <span class="text-xs text-slate-400 font-medium">Ayat ke-${ayahNo}</span>
                 </div>
 
-                <!-- Tombol Putar Audio Ayat -->
-                ${audioUrl ? `
-                  <button id="btnPlayAyah-${ayahNo}" onclick="playAyatAudio(${ayahNo}, '${audioUrl}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-amber-500 hover:border-amber-500 hover:text-white text-slate-700 text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95" title="Dengarkan Qari Misyari Rasyid untuk ayat ${ayahNo}">
-                    <i class="fa-solid fa-play text-[10px]"></i>
-                    <span>Audio</span>
+                <div class="flex items-center gap-1.5">
+                  <!-- Tombol Putar Audio Ayat -->
+                  ${audioUrl ? `
+                    <button id="btnPlayAyah-${ayahNo}" onclick="playAyatAudio(${ayahNo}, '${audioUrl}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-amber-500 hover:border-amber-500 hover:text-white text-slate-700 text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95" title="Dengarkan Qari Misyari Rasyid untuk ayat ${ayahNo}">
+                      <i class="fa-solid fa-play text-[10px]"></i>
+                      <span>Audio</span>
+                    </button>
+                  ` : ''}
+
+                  <!-- Tombol Salin Teks Ayat ke Clipboard -->
+                  <button type="button" onclick="copyAyahText(${ayahNo})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95" title="Salin Arab, Latin, dan Terjemahan">
+                    <i class="fa-regular fa-copy text-[11px]"></i>
+                    <span class="hidden sm:inline">Salin</span>
                   </button>
-                ` : ''}
+                </div>
               </div>
 
               <!-- Lapisan 1: Kaligrafi Arab Berharakat -->

@@ -1,7 +1,7 @@
   </main>
 
-  <!-- ================= FOOTER (Hanya tampil di Desktop/Tablet, di Mobile diakses via icon Info di Header) ================= -->
-  <footer class="hidden md:block bg-white border-t border-slate-200/80 mt-16 py-8 text-sm text-slate-500">
+  <!-- ================= FOOTER (Hanya tampil di Desktop/Layar Lebar lg: 1024px+, di bawahnya memakai Info modal) ================= -->
+  <footer class="hidden lg:block bg-white border-t border-slate-200/80 mt-16 py-8 text-sm text-slate-500">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3.5">
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-700 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-brand-700/20">
