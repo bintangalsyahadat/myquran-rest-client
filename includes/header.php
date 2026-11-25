@@ -94,12 +94,18 @@
           </a>
         </nav>
 
-        <!-- Right Side: Repository Link Button -->
+        <!-- Right Side: Repository Link Button & Info Modal Trigger -->
         <div class="flex items-center gap-2 sm:gap-3">
           <a href="https://github.com/bintangalsyahadat/myquran-rest-client" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl font-semibold flex items-center gap-2 border border-slate-200/80 transition-all hover:shadow-sm">
             <i class="fa-brands fa-github text-sm"></i>
-            <span>Repository</span>
+            <span class="hidden sm:inline">Repository</span>
           </a>
+
+          <!-- Tombol Info Platform (Pop-up Informasi Footer) -->
+          <button type="button" onclick="openPlatformInfoModal()" class="w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center justify-center gap-2 border border-slate-200/80 transition-all hover:shadow-sm" title="Informasi Platform MyQuran">
+            <i class="fa-solid fa-circle-info text-sm text-slate-900"></i>
+            <span class="hidden sm:inline">Info</span>
+          </button>
         </div>
       </div>
     </div>
@@ -132,5 +138,75 @@
       <span>Husna</span>
     </a>
   </nav>
+
+  <!-- ================= POP-UP MODAL INFORMASI PLATFORM (INFO FOOTER) ================= -->
+  <div id="platformInfoModal" class="fixed inset-0 z-[70] bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-all" onclick="handlePlatformInfoBackdropClick(event)">
+    <div class="bg-white w-full max-w-sm sm:max-w-md rounded-[2rem] p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+      <!-- Header Pop-up -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-700 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-brand-700/20">
+            <i class="fa-solid fa-kaaba text-base"></i>
+          </div>
+          <div>
+            <h4 class="font-extrabold text-slate-900 text-sm tracking-tight">My<span class="text-brand-600">Quran</span> Platform</h4>
+            <span class="block text-[11px] text-slate-400">Informasi REST Client</span>
+          </div>
+        </div>
+        <button type="button" onclick="closePlatformInfoModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Deskripsi Layanan -->
+      <div class="space-y-3 text-xs text-slate-600">
+        <p class="leading-relaxed">
+          Platform REST Client islami berbasis web untuk kebutuhan ibadah harian umat Muslim:
+        </p>
+        <div class="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-700">
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <i class="fa-solid fa-clock text-brand-600"></i> Jadwal Sholat
+          </div>
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <i class="fa-solid fa-book-quran text-amber-600"></i> Al-Qur'an Digital
+          </div>
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <i class="fa-solid fa-hands-praying text-sky-600"></i> 227+ Doa Harian
+          </div>
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <i class="fa-solid fa-star-and-crescent text-purple-600"></i> 99 Asmaul Husna
+          </div>
+        </div>
+      </div>
+
+      <!-- Sumber Data API & Footer Modal -->
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+        <div class="text-[11px] text-slate-400">
+          API Publik: <a href="https://api.myquran.com" target="_blank" rel="noopener noreferrer" class="text-brand-600 hover:underline font-semibold">api.myquran.com</a>
+        </div>
+        <button type="button" onclick="closePlatformInfoModal()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openPlatformInfoModal() {
+      const modal = document.getElementById('platformInfoModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closePlatformInfoModal() {
+      const modal = document.getElementById('platformInfoModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handlePlatformInfoBackdropClick(e) {
+      if (e.target.id === 'platformInfoModal') {
+        closePlatformInfoModal();
+      }
+    }
+  </script>
 
   <main class="flex-grow">

@@ -302,8 +302,8 @@ include 'includes/header.php';
       </div>
       <div class="flex items-center gap-2">
         <!-- Tombol Putar Full Surah Audio -->
-        <button id="btnPlayFullSurah" onclick="toggleFullSurahAudio()" class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-xs shadow-sm transition hover:scale-105 active:scale-95" title="Putar Murottal Full Surah">
-          <i id="iconPlayFullSurah" class="fa-solid fa-play text-amber-700"></i>
+        <button id="btnPlayFullSurah" onclick="toggleFullSurahAudio()" class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all duration-200 hover:scale-105 active:scale-95" title="Putar Murottal Full Surah">
+          <i id="iconPlayFullSurah" class="fa-solid fa-play text-white"></i>
           <span id="labelPlayFullSurah" class="hidden sm:inline">Putar Surah</span>
         </button>
         <button onclick="closeAyatModal()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition" title="Tutup Modal">
@@ -354,11 +354,11 @@ include 'includes/header.php';
 <!-- ================= CUSTOM CONFIRMATION MODAL ================= -->
 <div id="confirmSwitchModal" class="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-all">
   <div class="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl border border-slate-100 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
-    <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl mx-auto shadow-inner">
+    <div id="confirmModalIcon" class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl mx-auto shadow-inner">
       <i class="fa-solid fa-book-open-reader"></i>
     </div>
     <div class="space-y-1.5">
-      <h4 class="text-base font-extrabold text-slate-900">Belum Selesai Membaca</h4>
+      <h4 id="confirmModalTitle" class="text-base font-extrabold text-slate-900">Belum Selesai Membaca</h4>
       <p id="confirmSwitchMessage" class="text-xs text-slate-500 leading-relaxed">
         Anda baru membaca sebagian ayat. Yakin ingin langsung berpindah surah?
       </p>
@@ -426,11 +426,10 @@ include 'includes/header.php';
     const iconFull = document.getElementById('iconPlayFullSurah');
     const labelFull = document.getElementById('labelPlayFullSurah');
     const btnFull = document.getElementById('btnPlayFullSurah');
-    if (iconFull) iconFull.className = 'fa-solid fa-play text-amber-700';
+    if (iconFull) iconFull.className = 'fa-solid fa-play text-white';
     if (labelFull) labelFull.textContent = 'Putar Surah';
     if (btnFull) {
-      btnFull.classList.remove('bg-amber-600', 'text-white', 'border-amber-600', 'bg-amber-100', 'border-amber-300');
-      btnFull.classList.add('bg-amber-50', 'text-amber-900', 'border-amber-200');
+      btnFull.className = 'inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all duration-200 hover:scale-105 active:scale-95';
     }
 
     // Reset highlight dan icon di ayat yang aktif
@@ -443,8 +442,7 @@ include 'includes/header.php';
       const activeAyahBtn = document.getElementById(`btnPlayAyah-${currentPlayingAyahNo}`);
       if (activeAyahBtn) {
         activeAyahBtn.innerHTML = `<i class="fa-solid fa-play text-[10px]"></i><span>Audio</span>`;
-        activeAyahBtn.classList.remove('bg-amber-600', 'text-white', 'border-amber-600', 'bg-amber-100', 'text-amber-900', 'border-amber-300');
-        activeAyahBtn.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+        activeAyahBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-amber-500 hover:border-amber-500 hover:text-white text-slate-700 text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95';
       }
     }
 
@@ -467,11 +465,10 @@ include 'includes/header.php';
     // KASUS 1: Sedang memutar Full Surah -> Pause (Jeda)
     if (currentAudioMode === 'surah' && !globalAudio.paused) {
       globalAudio.pause();
-      if (iconFull) iconFull.className = 'fa-solid fa-play text-amber-700';
+      if (iconFull) iconFull.className = 'fa-solid fa-play text-amber-800';
       if (labelFull) labelFull.textContent = 'Lanjut Surah';
       if (btnFull) {
-        btnFull.classList.remove('bg-amber-600', 'text-white', 'border-amber-600');
-        btnFull.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+        btnFull.className = 'inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold text-xs shadow-sm transition-all duration-200 hover:scale-105 active:scale-95';
       }
       if (audioInfo) {
         audioInfo.innerHTML = `<span class="text-amber-700 italic font-semibold">(Dijeda)</span> Surah <b>${currentSurahLatinName}</b> &bull; Ayat ${currentPlayingAyahNo || 1} &bull; Misyari Rasyid`;
@@ -481,8 +478,7 @@ include 'includes/header.php';
         const activeAyahBtn = document.getElementById(`btnPlayAyah-${currentPlayingAyahNo}`);
         if (activeAyahBtn) {
           activeAyahBtn.innerHTML = `<i class="fa-solid fa-play text-[10px]"></i><span>Lanjut</span>`;
-          activeAyahBtn.classList.remove('bg-amber-600', 'text-white', 'border-amber-600');
-          activeAyahBtn.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+          activeAyahBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95';
         }
       }
       return;
@@ -495,8 +491,7 @@ include 'includes/header.php';
         if (iconFull) iconFull.className = 'fa-solid fa-pause text-white';
         if (labelFull) labelFull.textContent = 'Jeda Surah';
         if (btnFull) {
-          btnFull.classList.remove('bg-amber-50', 'bg-amber-100', 'text-amber-900', 'border-amber-200', 'border-amber-300');
-          btnFull.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+          btnFull.className = 'inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md shadow-amber-600/30 transition-all duration-200 hover:scale-105 active:scale-95';
         }
         if (audioInfo) {
           audioInfo.innerHTML = `Memutar Surah <b>${currentSurahLatinName}</b> &bull; <b>Ayat ${currentPlayingAyahNo}</b> dari ${currentSurahTotalAyat} &bull; Qari: Misyari Rasyid`;
@@ -506,8 +501,7 @@ include 'includes/header.php';
           const activeAyahBtn = document.getElementById(`btnPlayAyah-${currentPlayingAyahNo}`);
           if (activeAyahBtn) {
             activeAyahBtn.innerHTML = `<i class="fa-solid fa-pause text-[10px]"></i><span>Jeda</span>`;
-            activeAyahBtn.classList.remove('bg-white', 'bg-amber-100', 'text-slate-600', 'text-amber-900', 'border-slate-200', 'border-amber-300');
-            activeAyahBtn.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+            activeAyahBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow-md shadow-amber-600/20 hover:scale-105 active:scale-95';
           }
         }
       } catch (e) {
@@ -524,8 +518,7 @@ include 'includes/header.php';
     if (iconFull) iconFull.className = 'fa-solid fa-pause text-white';
     if (labelFull) labelFull.textContent = 'Jeda Surah';
     if (btnFull) {
-      btnFull.classList.remove('bg-amber-50', 'bg-amber-100', 'text-amber-900', 'border-amber-200', 'border-amber-300');
-      btnFull.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+      btnFull.className = 'inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md shadow-amber-600/30 transition-all duration-200 hover:scale-105 active:scale-95';
     }
 
     await playNextAyahInSequence(1);
@@ -740,8 +733,9 @@ include 'includes/header.php';
     await fetchNextAyatChunk();
   }
 
-  // State untuk pending navigasi surah
+  // State untuk pending aksi konfirmasi (navigasi atau tutup modal)
   let pendingNavigationTarget = null;
+  let isPendingCloseModal = false;
 
   // Navigasi Shortcut ke Surah Sebelumnya (-1) atau Selanjutnya (+1)
   function navigateToSurah(direction) {
@@ -751,10 +745,18 @@ include 'includes/header.php';
     // Jika belum selesai membaca seluruh ayat, munculkan Custom Modal Konfirmasi
     if (highestVisibleAyah < currentSurahTotalAyat) {
       pendingNavigationTarget = targetNumber;
+      isPendingCloseModal = false;
       const isNext = direction > 0;
       const confirmModal = document.getElementById('confirmSwitchModal');
+      const confirmTitle = document.getElementById('confirmModalTitle');
+      const confirmIcon = document.getElementById('confirmModalIcon');
       const confirmMsg = document.getElementById('confirmSwitchMessage');
+      const btnProceed = document.getElementById('btnProceedSwitch');
       
+      if (confirmTitle) confirmTitle.textContent = 'Belum Selesai Membaca';
+      if (confirmIcon) confirmIcon.innerHTML = '<i class="fa-solid fa-book-open-reader"></i>';
+      if (btnProceed) btnProceed.textContent = 'Ya, Pindah';
+
       if (confirmMsg) {
         confirmMsg.innerHTML = isNext
           ? `Anda baru membaca sampai ayat <span class="font-bold text-slate-800">${highestVisibleAyah}</span> dari <span class="font-bold text-slate-800">${currentSurahTotalAyat}</span> ayat. Yakin ingin langsung beralih ke surah berikutnya?`
@@ -817,11 +819,15 @@ include 'includes/header.php';
   document.getElementById('btnCancelSwitch').addEventListener('click', () => {
     document.getElementById('confirmSwitchModal').classList.add('hidden');
     pendingNavigationTarget = null;
+    isPendingCloseModal = false;
   });
 
   document.getElementById('btnProceedSwitch').addEventListener('click', () => {
     document.getElementById('confirmSwitchModal').classList.add('hidden');
-    if (pendingNavigationTarget !== null) {
+    if (isPendingCloseModal) {
+      isPendingCloseModal = false;
+      forceCloseAyatModal();
+    } else if (pendingNavigationTarget !== null) {
       executeSurahSwitch(pendingNavigationTarget);
       pendingNavigationTarget = null;
     }
@@ -878,7 +884,7 @@ include 'includes/header.php';
 
                 <!-- Tombol Putar Audio Ayat -->
                 ${audioUrl ? `
-                  <button id="btnPlayAyah-${ayahNo}" onclick="playAyatAudio(${ayahNo}, '${audioUrl}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-amber-50 hover:border-amber-300 text-slate-700 text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95" title="Dengarkan Qari Misyari Rasyid untuk ayat ${ayahNo}">
+                  <button id="btnPlayAyah-${ayahNo}" onclick="playAyatAudio(${ayahNo}, '${audioUrl}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-amber-500 hover:border-amber-500 hover:text-white text-slate-700 text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95" title="Dengarkan Qari Misyari Rasyid untuk ayat ${ayahNo}">
                     <i class="fa-solid fa-play text-[10px]"></i>
                     <span>Audio</span>
                   </button>
@@ -965,14 +971,58 @@ include 'includes/header.php';
     }
   }
 
+  // Tutup Modal Pembacaan Ayat dengan Konfirmasi jika Audio Sedang Berjalan
   function closeAyatModal() {
+    // Cek apakah audio sedang aktif (sedang berbunyi atau dijeda di tengah jalan)
+    const isAudioActive = currentAudioMode !== null || (globalAudio && !globalAudio.paused);
+
+    if (isAudioActive) {
+      isPendingCloseModal = true;
+      pendingNavigationTarget = null;
+
+      const confirmModal = document.getElementById('confirmSwitchModal');
+      const confirmTitle = document.getElementById('confirmModalTitle');
+      const confirmIcon = document.getElementById('confirmModalIcon');
+      const confirmMsg = document.getElementById('confirmSwitchMessage');
+      const btnProceed = document.getElementById('btnProceedSwitch');
+
+      if (confirmTitle) confirmTitle.textContent = 'Audio Sedang Berjalan';
+      if (confirmIcon) confirmIcon.innerHTML = '<i class="fa-solid fa-volume-high text-amber-600"></i>';
+      if (btnProceed) btnProceed.textContent = 'Ya, Tutup & Hentikan';
+
+      if (confirmMsg) {
+        confirmMsg.innerHTML = `Murottal audio Surah <span class="font-bold text-slate-800">${currentSurahLatinName}</span> masih aktif. Yakin ingin menutup halaman dan menghentikan audio?`;
+      }
+
+      if (confirmModal) confirmModal.classList.remove('hidden');
+      return;
+    }
+
+    forceCloseAyatModal();
+  }
+
+  // Eksekusi penutupan modal ayat
+  function forceCloseAyatModal() {
     stopCurrentAudio();
     document.getElementById('ayatModal').classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeAyatModal();
+    if (e.key === 'Escape') {
+      const confirmModal = document.getElementById('confirmSwitchModal');
+      // Jika modal konfirmasi sedang terbuka, tutup modal konfirmasi terlebih dahulu
+      if (confirmModal && !confirmModal.classList.contains('hidden')) {
+        confirmModal.classList.add('hidden');
+        pendingNavigationTarget = null;
+        isPendingCloseModal = false;
+        return;
+      }
+      const ayatModal = document.getElementById('ayatModal');
+      if (ayatModal && !ayatModal.classList.contains('hidden')) {
+        closeAyatModal();
+      }
+    }
   });
 </script>
 
